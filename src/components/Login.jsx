@@ -8,7 +8,7 @@ const Login = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
     // For now, let's just log the data. 
     // Step 4 will be connecting this to a backend!
@@ -16,11 +16,37 @@ const Login = () => {
     
     if(!formData.email || !formData.password) {
       setError("Please fill in all fields.");
-    } else {
-      setError("");
-      alert("Login logic triggered!");
+      return;
     }
-  };
+ 
+  try {
+    const response = await fetch("http://localhost:3000/api/register",{
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(formData),
+  });
+
+  const data = await response.json()
+
+  console.log('Server response:', data);
+
+  if(data.status === "success"){
+    setError("")
+      alert("Login successful")
+  }
+  else{
+    setError("Login failed")
+  }
+
+}
+catch(error){
+  console.error(error);
+  setError("Sever error. Try again later")
+}
+
+}
 
   return (
     <div className="auth-container">
